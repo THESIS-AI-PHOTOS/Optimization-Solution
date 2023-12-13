@@ -35,7 +35,7 @@ def compare_faces_with_cropped(image_file, face_image_encodes, image_folder_crop
     for i, face_image_encode in enumerate(face_image_encodes):
         if face_image_encode.size == 0:
             print(f"Không tìm thấy khuôn mặt trong ảnh đầu vào.")
-            continue
+            break
 
         # So sánh mỗi khuôn mặt trong ảnh đầu vào với tất cả ảnh đã được cắt
         for photo_crop_path in photo_croppeds:
