@@ -75,8 +75,25 @@ image_folder = "./1080/"
 image_folder_crops = "./cropped_train"
 
 # Lặp qua từng ảnh trong thư mục
+with open(f'graph_node_1080.txt', 'w') as file:
+    # Get the list of full image filenames
+    full_image_filenames = [filename.split('.')[0] for filename in os.listdir(image_folder_crops) if filename != '.DS_Store']
+
+    # Write full image filenames to the file
+    file.write(','.join(full_image_filenames))
+    photo_croppeds = [root.strip() for root in os.listdir(image_folder_crops)]
+    # Check if full_image_filenames is not empty and cropped_ids is not empty
+    if full_image_filenames and photo_croppeds:
+        # Write a comma only if full_image_filenames is not empty
+        file.write(',')
+
+    # Get the list of cropped image filenames
+    cropped_filenames = [filename.split('.')[0] for filename in photo_croppeds]
+
+    # Write cropped image filenames to the file
+    file.write(','.join(cropped_filenames))
+    
 with open(f'graph_edges_1080.txt', 'w') as file:
-  i=0
   for image_file in os.listdir(image_folder):
       if image_file.lower().endswith(('.jpg', '.jpeg', '.png')):
           # Đường dẫn đầy đủ đến tệp ảnh
@@ -87,6 +104,4 @@ with open(f'graph_edges_1080.txt', 'w') as file:
 
           # Gọi hàm compare_faces_with_cropped để so sánh khuôn mặt
           compare_faces_with_cropped(image_file, face_image_encodes, image_folder_crops,file)
-      if i==5:
-        break
-      i+=1
+    
