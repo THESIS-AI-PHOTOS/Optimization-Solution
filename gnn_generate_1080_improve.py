@@ -96,12 +96,15 @@ with open(f'graph_node_1080.txt', 'w') as file:
 with open(f'graph_edges_1080.txt', 'w') as file:
   for image_file in os.listdir(image_folder):
       if image_file.lower().endswith(('.jpg', '.jpeg', '.png')):
-          # Đường dẫn đầy đủ đến tệp ảnh
-          image_path = os.path.join(image_folder, image_file)
+          try:
+            # Đường dẫn đầy đủ đến tệp ảnh
+            image_path = os.path.join(image_folder, image_file)
 
-          # Gọi hàm crop_all_faces cho mỗi tệp ảnh
-          _, face_image_encodes = crop_all_faces(image_path)
+            # Gọi hàm crop_all_faces cho mỗi tệp ảnh
+            _, face_image_encodes = crop_all_faces(image_path)
 
-          # Gọi hàm compare_faces_with_cropped để so sánh khuôn mặt
-          compare_faces_with_cropped(image_file, face_image_encodes, image_folder_crops,file)
+            # Gọi hàm compare_faces_with_cropped để so sánh khuôn mặt
+            compare_faces_with_cropped(image_file, face_image_encodes, image_folder_crops,file)
+          except:
+              continue
     
