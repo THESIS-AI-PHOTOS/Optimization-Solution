@@ -1,83 +1,63 @@
 import os
 import face_recognition
 
-USER_ID = 1080
-PATH_DIR = ''
-OUTPUT_FILE_PATH = ''
-GRAPH_NODE_FILE_NAME = f'graph_node_{USER_ID}'
-GRAPH_EDGE_FILE_NAME = f'graph_edges_{USER_ID}'
+# Đường dẫn đến thư mục chứa các hình ảnh crop khuôn mặt
+folder_path = "/path/to/your/folder"
 
-path = f"{PATH_DIR}{USER_ID}"
-image_folder_path = f"./cropped_train/"
-full_images_folder = f"./1080"
-cropped_ids=[]
-photo_cropped = os.listdir(image_folder_path) 
-photo_cropped = [root.strip() for root in photo_cropped]
-cropped_ids =  photo_cropped
+# Tạo danh sách chứa các mã hóa khuôn mặt của tất cả các hình ảnh
+face_encodings_list = []
 
-network=[]
+# Lặp qua tất cả các tệp trong thư mục
+for filename in os.listdir(folder_path):
+    if filename.endswith(".jpg") or filename.endswith(".png"):
+        # Đường dẫn đầy đủ đến hình ảnh
+        image_path = os.path.join(folder_path, filename)
 
-def find_and_create(image_path):
+        # Tải hình ảnh và xác định khuôn mặt trong hình ảnh
+        image = face_recognition.load_image_file(image_path)
+        face_locations = face_recognition.face_locations(image)
+        face_encodings = face_recognition.face_encodings(image, face_locations)
 
-    image_of_person1 = face_recognition.load_image_file(image_path)
-    person1_face_encoding = face_recognition.face_encodings(image_of_person1)
-    if len(person1_face_encoding) < 1:
-        return
-    person1_face_encoding = person1_face_encoding[0]
-    # Iterate through the full images
-    for full_image_filename in os.listdir(full_images_folder):
-        print('full_image_filename: ' + str(full_image_filename))
-        # có Id cropped
-        if full_image_filename == '.DS_Store':
-            continue
-        full_image_path = os.path.join(full_images_folder, full_image_filename)
-        if os.path.isfile(full_image_path):
-            # Load the current full image
-            image_of_full = face_recognition.load_image_file(full_image_path)
-            
-            # Encode the face of the current full image
-            full_image_face_encoding = face_recognition.face_encodings(image_of_full)
-            if len(full_image_face_encoding) > 0:
-                # Compare the face encodings and get a similarity score
-                face_similarity = face_recognition.face_distance([person1_face_encoding], full_image_face_encoding[0])
-                similarity_percentage = (1 - face_similarity[0]) * 100
-                print("percent: " + str(similarity_percentage))
-                # Filter images with similarity > 70%
-                if similarity_percentage > 70:
-                    network.append(full_image_filename.split(".")[0])
-    
-    print("Image filtering and organization completed.")
+        # Thêm mã hóa khuôn mặt vào danh sách nếu có ít nhất một khuôn mặt trong hình ảnh
+        if len(face_encodings) > 0:
+            face_encodings_list.extend(face_encodings)
 
-with open(f'{OUTPUT_FILE_PATH}{GRAPH_NODE_FILE_NAME}.txt', 'w') as file:
-    # Get the list of full image filenames
-    full_image_filenames = [filename.split('.')[0] for filename in os.listdir(full_images_folder) if filename != '.DS_Store']
+# face_encodings_list bây giờ chứa mã hóa khuôn mặt của tất cả các hình ảnh trong thư mục
+print("Number of face encodings:", len(face_encodings_list))
 
-    # Write full image filenames to the file
-    file.write(','.join(full_image_filenames))
+# Lặp qua tất cả các tệp trong thư mục
+for filename in os.listdir(folder_path):
+    if filename.endswith(".jpg") or filename.endswith(".png"):
+        # Đường dẫn đầy đủ đến hình ảnh
+        image_path = os.path.join(folder_path, filename)
 
-    # Check if full_image_filenames is not empty and cropped_ids is not empty
-    if full_image_filenames and cropped_ids:
-        # Write a comma only if full_image_filenames is not empty
-        file.write(',')
+        # Tải hình ảnh và xác định khuôn mặt trong hình ảnh
+        image = face_recognition.load_image_file(image_path)
+        face_locations = face_recognition.face_locations(image)
+        face_encodings = face_recognition.face_encodings(image, face_locations)
 
-    # Get the list of cropped image filenames
-    cropped_filenames = [filename.split('.')[0] for filename in cropped_ids]
+        # Kiểm tra xem có khuôn mặt trong hình ảnh không
+        if len(face_encodings) > 0:
+            # Lấy mã hóa của khuôn mặt đầu tiên trong hình ảnh
+            face_encodings_list.append(face_encodings[0])
 
-    # Write cropped image filenames to the file
-    file.write(','.join(cropped_filenames))
-with open(f'{OUTPUT_FILE_PATH}{GRAPH_EDGE_FILE_NAME}.txt', 'w') as file:
-    for image_filename in cropped_ids:
-        if image_filename == '.DS_Store':
-            continue
-        image_path = os.path.join(image_folder_path, image_filename)
-        # print(image_filename.split('.'))
-        find_and_create(image_path)
-        print(image_filename.split(".")[0])
-        print('network: ' + str(network))
-        if (len(network) != 0):
-            for n in network:
-                temp = []
-                temp.append(n)
-                temp.append(image_filename.split(".")[0])
-                file.write(str(tuple(temp)) + "\n")
-        network=[]
+# Chuyển đổi danh sách mã hóa thành mảng numpy
+face_encodings_array = np.array(face_encodings_list)
+
+# Số lượng nhóm bạn muốn tạo
+num_clusters = 3  # Thay đổi số lượng nhóm theo mong muốn
+
+# Áp dụng thuật toán K-means clustering để gom nhóm các khuôn mặt
+kmeans = KMeans(n_clusters=num_clusters)
+kmeans.fit(face_encodings_array)
+
+# Tạo một từ điển để lưu trữ các nhóm
+image_groups = {i: [] for i in range(num_clusters)}
+
+# Gán từng hình ảnh vào nhóm tương ứng
+for filename, label in zip(os.listdir(folder_path), kmeans.labels_):
+    image_groups[label].append(filename)
+
+# In thông tin về các nhóm
+for group, group_images in image_groups.items():
+    print(f"Group {group + 1}: {', '.join(group_images)}")
