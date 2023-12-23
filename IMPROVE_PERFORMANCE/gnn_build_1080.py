@@ -6,9 +6,9 @@ from torch_geometric.data import Data, DataLoader
 import networkx as nx
 import pickle
 
-GRAPH_NODE_FILE_NAME = 'graph_nodes'
-GRAPH_EDGE_FILE_NAME = 'graph_edges'
-SAVED_MODEL_FILE_NAME = 'saved_graph'
+GRAPH_NODE_FILE_NAME = 'graph_nodes_1080'
+GRAPH_EDGE_FILE_NAME = 'graph_edges_1080'
+SAVED_MODEL_FILE_NAME = 'saved_graph_1080'
 PATH_DIR = './'
 
 # Open a file for reading

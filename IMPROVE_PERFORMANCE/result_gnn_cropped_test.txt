@@ -1,0 +1,1 @@
+[{"photo_test_name": "Chi Quyen_58694157_875982369413140_2524073699137552384_n_face_0.jpg", "time_cropped": 2.432653, "time_predict": 0.0, "total_time": 2.432653, "result": [{"target_node": "58670512_875982496079794_2653712029927342080_n_face_2.jpg", "results": [{"photoName": "58670512_875982496079794_2653712029927342080_n.jpg"}], "start_time": 

@@ -44,22 +44,3 @@ with open(f'{PATH_DIR}{RESULT_GNN_FILE_NAME}.txt', 'w') as file:
 
 print(actual)
 # Giả sử bạn có một danh sách các bản ghi như sau
-data = [
-    {"photo_name": photo_name, "actual": actual, 'time': duration},
-]
-
-# Tạo và ghi vào file CSV
-csv_file_path = "result_face_detect.csv"
-header = ["photo_name", "actual", "time"]
-
-with open(csv_file_path, mode='w', newline='') as file:
-    writer = csv.DictWriter(file, fieldnames=header)
-    
-    # Viết header vào file
-    writer.writeheader()
-
-    # Viết từng dòng dữ liệu vào file
-    for record in data:
-        writer.writerow(record)
-
-print(f"File CSV đã được tạo thành công tại: {csv_file_path}")
