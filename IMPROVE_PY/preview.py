@@ -110,6 +110,106 @@ for index, record in data.iterrows():
 html_content += """
         </tbody>
     </table>
+    		<script>
+			function calculateAccuracy(truePositives, falsePositives) {
+				if (truePositives === undefined || falsePositives === undefined) {
+					return null;
+				}
+
+				if (truePositives < 0 || falsePositives < 0) {
+					return null;
+				}
+
+				const accuracy = truePositives / (truePositives + falsePositives);
+				return accuracy;
+			}
+
+			function calculatePrecision(truePositives, falsePositives) {
+				if (truePositives === undefined || falsePositives === undefined) {
+					return null;
+				}
+
+				if (truePositives < 0 || falsePositives < 0) {
+					return null;
+				}
+
+				const precision = truePositives / (truePositives + falsePositives);
+				return precision;
+			}
+
+			function calculateRecall(truePositives, falseNegatives) {
+				if (truePositives === undefined || falseNegatives === undefined) {
+					return null;
+				}
+
+				if (truePositives < 0 || falseNegatives < 0) {
+					return null;
+				}
+
+				const recall = truePositives / (truePositives + falseNegatives);
+				return recall;
+			}
+
+			function calculateF1Score(precision, recall) {
+				if (precision === undefined || recall === undefined) {
+					return null;
+				}
+
+				if (precision < 0 || recall < 0) {
+					return null;
+				}
+
+				const f1Score = (2 * precision * recall) / (precision + recall);
+				return f1Score;
+			}
+
+			const countImageNameByElementTr = (element) => {
+				const srcs = element.querySelectorAll("img");
+				if (srcs.length > 1) {
+					let count = {};
+					srcs.forEach((el) => {
+						const imageURL = el.getAttribute("src").split("/");
+						const name = imageURL[imageURL.length - 1].split("_")[0];
+						if (!count[name]) {
+							count[name] = 1;
+						} else {
+							count[name] = count[name] + 1;
+						}
+					});
+					return count;
+				}
+			};
+			const getTestName = (el) => {
+				const imgTest = el.querySelector("img");
+				const imageURL = imgTest.getAttribute("src").split("/");
+				const name = imageURL[imageURL.length - 1].split("_")[0];
+				return name;
+			};
+
+			const processTrElement = (test) => {
+				const name = getTestName(test);
+				const count = countImageNameByElementTr(test);
+				const correct = count[name] || 0;
+				const filter = Object.entries(count).filter(([key, value]) => key !== name);
+				const incorrect = Object.values(filter).reduce((total, item) => total + item[1], 0);
+
+				const accuracy = calculateAccuracy(correct, incorrect);
+				const precision = calculatePrecision(correct, incorrect);
+				const recall = calculateRecall(correct, incorrect);
+
+				// Update HTML elements
+				test.querySelector(".correct").innerHTML = correct;
+				test.querySelector(".incorrect").innerHTML = incorrect;
+				test.querySelector(".accuracy").innerHTML = accuracy;
+				test.querySelector(".precision").innerHTML = precision;
+				test.querySelector(".recall").innerHTML = recall;
+				test.querySelector(".f1_score").innerHTML = calculateF1Score(precision, recall);
+			};
+
+			// Process all tr elements
+			const list_tr_elements = document.querySelectorAll("html>body>table>tbody>tr");
+			list_tr_elements.forEach(processTrElement);
+		</script>
 </body>
 </html>
 """
